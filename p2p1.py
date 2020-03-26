@@ -13,7 +13,7 @@ serverSocket.bind((Host,Port))
 
 
 xtrans = 1  #arbitrary value 
-next_set =0 #tracks whether or not node is connected 0/1
+next_set = 0 #tracks whether or not node is connected 0/1
  
 print('Waiting For Player to Join network...')
 
