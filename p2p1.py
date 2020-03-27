@@ -15,7 +15,7 @@ serverSocket.bind((Host,Port))
 xtrans = 1  #arbitrary value 
 next_set = 0 #tracks whether or not node is connected 0/1
  
-print('Waiting For Player to Join network...')
+print('Waiting For Hospital to join network...')
 
 
 
@@ -28,7 +28,8 @@ while True: #infinite loop
       next = addr   #neighbour node address {important!!}
       print("My next node is:" +str(next)+ str(msg) ) #debug
    if addr != next:
-      if (str(msg)[3] == '('):
+      print(str(msg))
+      if (str(msg)[2] == '('):
          print("already formatted")
          continue #already formatted
      

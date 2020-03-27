@@ -29,7 +29,9 @@ while True:
       next = (Host,Port)   #neighbour node address {important!!}  #issue atm quick-fixed
       print("My next node is:" +str(next) ) #debug
    
-   if (str(msg)[3] == '('):
+   print('msg is: ' + str(msg))
+
+   if (str(msg)[3] == '('): #this will throw a string index out of range error bc the msg is only the number of beds
       print("already formatted")
       continue #already formatted
 
