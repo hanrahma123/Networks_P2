@@ -1,7 +1,8 @@
 #Player_n
 
 from socket import *
-#import socket
+from threading import Thread
+import asyncio
 import sys 
 
 serverSocket = socket(AF_INET, SOCK_DGRAM)
@@ -28,9 +29,9 @@ def receivemsg():
       next = (Host,Port)   #neighbour node address {important!!}  #issue atm quick-fixed
       print("My next node is:" +str(next) ) #debug
 
-   if (str(msg)[3] == '('):
-      print("already formatted")
-      return 1 #already formatted
+   # if (str(msg)[3] == '('):
+   #    print("already formatted")
+   #    return 1 #already formatted
    return 0
 
 def scanforchangeNext():
@@ -64,20 +65,50 @@ def passOn():
 def displayforme():
    global addr,msg, xtrans,next
    print('Number of Beds from:',addr,'==' ,msg.decode('utf-8'))
+
+def inputSend():
    xtrans = input('Enter Available hospital beds:')
    serverSocket.sendto(str(xtrans).encode('utf-8'), next)
    #print("sent to next:"+str(next))
 
-while True:   ##Essentially the main()
- ##if you want to update a global within a function declare as global at start of function 
- 
-   msg, addr = serverSocket.recvfrom(2048)  #wait to receive
-   receivemsg()
-   try:
-      if scanforchangeNext() ==1: continue
-      passOn()
-      displayforme()
+def lookatport():
+   global msg, addr
+   msg,addr = serverSocket.recvfrom(2048)  #wait to receive
 
-   except IOError:
-      #sys.exit()#Terminate the program 
-      print("err")
+async def receiveandPrint():
+   while True:
+      lookatport()
+      receivemsg() 
+      if scanforchangeNext() !=1:
+         displayforme()
+
+async def requestandSend():
+   while True:
+      try : 
+         inputSend()
+      except IOError:
+         #sys.exit()  #Terminate the program 
+         print("err")
+
+def start_loop(loop):
+   asyncio.set_event_loop(loop)
+   loop.run_forever()
+
+
+   ##Essentially the main()
+ ##if you want to update a global within a function declare as global at start of function 
+   
+loop1 = asyncio.new_event_loop()
+t1 = Thread(target=start_loop, args=(loop1,))
+loop2 = asyncio.new_event_loop()
+t2 = Thread(target=start_loop, args=(loop2,))
+
+t1.start()  ##2 threads running in parallel
+t2.start()
+
+
+asyncio.run_coroutine_threadsafe(receiveandPrint(),loop1)
+asyncio.run_coroutine_threadsafe(requestandSend(),loop2)
+
+
+   

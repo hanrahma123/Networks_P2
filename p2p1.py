@@ -1,6 +1,7 @@
 #('192.168.1.14', 49343)0 pull host and port from that
 #Player_1 Apex of p2p network
-
+import asyncio
+from threading import Thread
 from socket import *
 import sys 
 
@@ -16,7 +17,7 @@ xtrans = 1  #arbitrary value
 next_set =0  #tracks whether or not node is connected 0/1
 
 print('Waiting For Player to Join network...')
-  
+ 
  
 def receivemsg():
    global next_set,next,addr,msg
@@ -35,28 +36,67 @@ def receivemsg():
          return 1 #dont display msg
    return 0
 
-def display():
+def displayforme():
    global msg
    #hopefully msg is for this node
-   print('Prev node has N beds:', msg.decode('utf-8'))
+   print('Number of Beds from:',addr,'==' ,msg.decode('utf-8'))
 
 def requestSend():
+   
    global xtrans,next
-   xtrans = input('Enter Available Hospital Beds:')
+   xtrans = input('Enter Available Hospital Beds:') 
    serverSocket.sendto(str(xtrans).encode('utf-8'), next)
+      
+def lookatport():
+   global msg, addr
+   msg,addr = serverSocket.recvfrom(2048)  #wait to receive
+
+
+async def receiveandPrint():
+   while True:
+      print("recPrint")
+      lookatport()
+      response = receivemsg()
+      #if response==0: 
+      displayforme()
+     
    
 
-while True: #infinite loop
+async def requestandSend():
+   while True:
+      print("reqSend")
+      try:
+         requestSend()
+      except IOError:
+         #sys.exit()  #Terminate the program 
+         print("err")
+
+def start_loop(loop):
+   asyncio.set_event_loop(loop)
+   loop.run_forever()
+
+ #infinite loop
+   #task1 = asyncio.create_task(receiveandPrint())
+   #task2 = asyncio.create_task(requestandSend())
+  # asyncio.run(receiveandPrint())
+  # asyncio.run(requestandSend())
+loop1 = asyncio.new_event_loop()
+t1 = Thread(target=start_loop, args=(loop1,))
+loop2 = asyncio.new_event_loop()
+t2 = Thread(target=start_loop, args=(loop2,))
+
+t1.start()  ## 2 threads running parallel
+t2.start()
+
+asyncio.run_coroutine_threadsafe(receiveandPrint(),loop1)
+asyncio.run_coroutine_threadsafe(requestandSend(),loop2)
+   #loop = asyncio.get_event_loop()
+   # tasks =[asyncio.ensure_future(receiveandPrint()),
+   # asyncio.ensure_future(requestandSend())]
+   # loop.run_until_complete(asyncio.gather(*tasks))
+   #await task1, task2
+   
   
-   msg,addr = serverSocket.recvfrom(2048)  #wait to receive
-   response = receivemsg()
-   if response==1: continue
-   try:
-      display()
-      requestSend()
-   except IOError:
-      #sys.exit()  #Terminate the program 
-      print("err")
 
 
 
