@@ -8,9 +8,6 @@ import sys
 
 serverSocket = socket(AF_INET, SOCK_DGRAM)
 
-#Hospital names and abbreviation setup
-cur_hosp = "Mayo Clinic Hospital - Sain Marys Campus (Rochester, Minn.)"
-cur_habv = "MAYO"
 
 Host = '127.0.0.1' #my ip origin device {find local ip -> ipconfig -> ipv4} README!!
 Port = 3000        #myport
@@ -20,21 +17,21 @@ serverSocket.bind((Host,Port))
 xtrans = 1  #arbitrary value 
 next_set =0  #tracks whether or not node is connected 0/1
 
-print('Setting up hospital data network...')
+print('Waiting For Player to Join network...')
  
  
 def receivemsg():
-   global next_set,next,addr,msg, next_habv
+   global next_set,next,addr,msg
    if next_set == 0: #should be 0 set up node/client
       next_set =1
       next = addr   #neighbour node address {important!!}
-      print("A new hospital has joined the network!\n")
+      print("My next node is:" +str(next)+ str(msg) ) #debug
    if addr != next:
       if (str(msg)[3] == '('):
          print("already formatted")
          return 1 #already formatted
    
-      if int(msg.decode('utf-8')) == -999:  #fresh node after 1st connected node, NEW HOSPITAL HAS JOINED NETWORK
+      if int(msg.decode('utf-8')) == -999:  #fresh node after 1st connected node
          serverSocket.sendto((str(addr).encode('utf-8') + msg) , next) #if not for that node send to (next)
          print("passed msg to next node" +str(next)) #debug
          return 1 #dont display msg
@@ -43,7 +40,7 @@ def receivemsg():
 def displayforme():
    global msg
    #hopefully msg is for this node
-   print('\nNumber of Beds from ',next_habv,': ' ,msg.decode('utf-8'))
+   print('Number of Beds from:',addr,'==' ,msg.decode('utf-8'))
 
 def requestSend():
    
