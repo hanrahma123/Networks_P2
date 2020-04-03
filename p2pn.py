@@ -67,7 +67,7 @@ def displayforme():
    print('Number of Beds from:',addr,'==' ,msg.decode('utf-8'))
 
 def inputSend():
-   xtrans = input('Enter Available hospital beds:')
+   xtrans = input('Enter Available hospital beds:\n')
    serverSocket.sendto(str(xtrans).encode('utf-8'), next)
    #print("sent to next:"+str(next))
 
@@ -79,8 +79,10 @@ async def receiveandPrint():
    while True:
       lookatport()
       receivemsg() 
-      if scanforchangeNext() !=1:
+      if scanforchangeNext() ==1:
          displayforme()
+      else: passOn()
+      
 
 async def requestandSend():
    while True:

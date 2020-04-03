@@ -44,12 +44,15 @@ def displayforme():
 def requestSend():
    
    global xtrans,next
-   xtrans = input('Enter Available Hospital Beds:') 
+   xtrans = input('Enter Available Hospital Beds:\n') 
    serverSocket.sendto(str(xtrans).encode('utf-8'), next)
       
 def lookatport():
    global msg, addr
    msg,addr = serverSocket.recvfrom(2048)  #wait to receive
+
+
+
 
 
 async def receiveandPrint():
