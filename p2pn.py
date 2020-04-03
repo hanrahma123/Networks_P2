@@ -81,7 +81,9 @@ async def receiveandPrint():
       receivemsg() 
       if scanforchangeNext() ==1:
          displayforme()
-      else: passOn()
+      else: 
+         passOn()
+         displayforme()
       
 
 async def requestandSend():

@@ -57,7 +57,7 @@ def lookatport():
 
 async def receiveandPrint():
    while True:
-      print("recPrint")
+      #print("recPrint")
       lookatport()
       response = receivemsg()
       #if response==0: 
@@ -67,7 +67,7 @@ async def receiveandPrint():
 
 async def requestandSend():
    while True:
-      print("reqSend")
+     # print("reqSend")
       try:
          requestSend()
       except IOError:
