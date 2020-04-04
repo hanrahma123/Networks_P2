@@ -45,7 +45,7 @@ def displayforme():
 def requestSend():
    
    global xtrans,next
-   xtrans = input('Enter Available Hospital Beds:') 
+   xtrans = input('Enter Available Hospital Beds:\n') 
    serverSocket.sendto(str(xtrans).encode('utf-8'), next)
       
 def lookatport():
@@ -53,9 +53,12 @@ def lookatport():
    msg,addr = serverSocket.recvfrom(2048)  #wait to receive
 
 
+
+
+
 async def receiveandPrint():
    while True:
-      print("recPrint")
+      #print("recPrint")
       lookatport()
       response = receivemsg()
       #if response==0: 
@@ -65,7 +68,7 @@ async def receiveandPrint():
 
 async def requestandSend():
    while True:
-      print("reqSend")
+     # print("reqSend")
       try:
          requestSend()
       except IOError:
