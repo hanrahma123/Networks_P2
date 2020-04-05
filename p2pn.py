@@ -40,16 +40,16 @@ def decrypt(msg):
    privatekey = RSAkey
    dec_data = privatekey.decrypt(msg)
    print('decrypted data is: ' + dec_data.decode())
-   return dec_data.decode()
+   return dec_data
 
-#try: serverSocket.sendto(encrypt(str(xtrans)[0]), (Host, Port))  #check if already exists
-try: serverSocket.sendto(str(xtrans).encode('utf-8'), (Host, Port))
+try: serverSocket.sendto(encrypt(str(xtrans))[0], (Host, Port))  #check if already exists
+#try: serverSocket.sendto(str(xtrans).encode('utf-8'), (Host, Port))
 except: print('Waiting For Hospital to Join network...')
 
 
 def receivemsg():
    global next, next_set,msg
-
+   msg = decrypt(msg)
    if next_set == 0: #should be 0 set up node/client
       next_set =1
   
@@ -94,6 +94,11 @@ def displayforme():
 
 def inputSend():
    xtrans = input('Enter Available hospital beds:\n')
+   encrypted = encrypt(xtrans) 
+   #NOT WORKING. possibly because it got confused what next is?
+
+   #need to extract[0] b/c RSA encode returns a tuple with one element as the encrypted message
+   #serverSocket.sendto(encrypted[0], next)
    serverSocket.sendto(str(xtrans).encode('utf-8'), next)
    #print("sent to next:"+str(next))
 

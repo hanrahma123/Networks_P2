@@ -37,8 +37,7 @@ def encrypt(msg):
    return enc_data
 
 def decrypt(msg):
-   print('recieved encrypted message is: ')
-   print(msg)
+   print('recieved encrypted message is: ' + msg)
    # retrieve exported private key from file
    file = open("Keys.txt", "r")
    privateKeyString = file.read() 
@@ -47,19 +46,18 @@ def decrypt(msg):
    #print(privateKeyString)
    privatekey = RSA.importKey(privateKeyString)
    dec_data = privatekey.decrypt(msg)
-   print('decrypted data is: ' + dec_data.decode())
-   return dec_data.decode()
+   return dec_data
 
 def receivemsg():
    global next_set,next,addr,msg
    if next_set == 0: #should be 0 set up node/client
       next_set =1
       next = addr   #neighbour node address {important!!}
-      print("My next node is:" +str(next)+ " with msg: " + str(msg) ) #debug
+      msg = decrypt(msg)
+      print("My next node is:" +str(next)+ " with decrypted msg: " + str(msg.decode()) ) #debug
    if addr != next:
-      #msg = decrypt(msg)
-      print('msg is: ' + str(msg)) #what is this format checking again?
-      if (str(msg)[2] == '('):
+      print('msg is: ' + str(msg.decode())) #what is this format checking?
+      if (str(msg)[3] == '('):
          print("already formatted")
          return 1 #already formatted
    
@@ -72,17 +70,17 @@ def receivemsg():
 def displayforme():
    global msg
    #hopefully msg is for this node
-   print('Number of Beds from:',addr,'==' ,msg.decode('utf-8'))
+   print('Number of Beds from:',addr,'==' ,msg)
+   #print('Number of Beds from:',addr,'==' ,msg.decode('utf-8'))
 
 def requestSend():
    global xtrans,next
    xtrans = input('Enter Available Hospital Beds:\n')
-   #msg = encrypt(xtrans) 
-   #print('encrypted message.')
-   #print('Decrypted version of message is: ' + str(RSAkey.decrypt(msg).decode()))
+   encrypted = encrypt(xtrans) 
+   
    #need to extract[0] b/c RSA encode returns a tuple with one element as the encrypted message
-   #serverSocket.sendto(msg[0], next)
-   serverSocket.sendto(msg, next)
+   serverSocket.sendto(encrypted[0], next)
+   #serverSocket.sendto(str(xtrans).encode('utf-8'), next)
       
 def lookatport():
    global msg, addr
