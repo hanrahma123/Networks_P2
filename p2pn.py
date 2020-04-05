@@ -55,6 +55,31 @@ def interpreter(dmsg):
          print("message passed")
       else:
          print("message returned home")
+         table(dmsg)
+
+
+def table(ctable):
+   #print("entered table function")
+   global reqlocation #the hospital abrevation that was requested by this node
+   ctable_arr = ctable.split()
+   print("HospID\t Abrev\t Total Beds\t Free Beds\t Hospital")
+   print(hosp_id, "\t", hosp_code[hosp_id], "\t", num_beds, "\t\t", num_free_beds, "\t\t", hosp_name[hosp_id])
+
+   arraysize = 0
+   for n in ctable_arr:
+      arraysize = arraysize + 1
+
+   index = 2   #index 2 is id, 3 is number of beds, 4 is number of unoccupied beds
+   while(arraysize > index):
+      cid = ctable_arr[index]
+      ctotbeds = ctable_arr[index + 1]
+      cfree = ctable_arr[index+2]
+      cid = int(cid)
+      if reqlocation == hosp_code[cid]:
+         print("This hospital was selected, colours to be added")
+      else:
+         print(cid, "\t", hosp_code[cid], "\t", ctotbeds, "\t\t", cfree, "\t\t", hosp_name[cid])
+      index = index + 3
 
 def formatter():
    global xtrans, reqlocation, hosp_id
