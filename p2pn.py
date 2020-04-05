@@ -4,9 +4,16 @@ from socket import *
 from threading import Thread
 import asyncio
 import sys 
+from Crypto.PublicKey import RSA
+from Crypto import Random
 
 serverSocket = socket(AF_INET, SOCK_DGRAM)
-
+#generate an new public key from the fetch the file to get private key, create new public key from it, then you can encrypt whatever you want
+file = open("Keys.txt", "r")
+privateKeyString = file.read() 
+file.close()
+RSAkey = RSA.importKey(privateKeyString)
+publickey = RSAkey.publickey()
 
 Host = '127.0.0.1'  #host ip {README!! ip->ipv4}
 Port = 3000        #my port
@@ -16,8 +23,25 @@ Port = 3000        #my port
 xtrans =-999  #arbitrary value for bed init value
 next_set =0 #tracks whether or not node is connected 0/1
 
+def encrypt(msg):
+   bytes_msg = msg.encode()
+   enc_data = publickey.encrypt(bytes_msg, 16) #encrypt message with public key
+   print('encrypted message is: ' + str(enc_data))
+   return enc_data
 
-try: serverSocket.sendto(str(xtrans).encode('utf-8'), (Host, Port))  #check if already exists
+def decrypt(msg):
+   print('recieved encrypted message is: ')
+   print(msg)
+   
+   #print('private key is: ')
+   #print(privateKeyString)
+   privatekey = RSAkey
+   dec_data = privatekey.decrypt(msg)
+   print('decrypted data is: ' + dec_data.decode())
+   return dec_data.decode()
+
+#try: serverSocket.sendto(encrypt(str(xtrans)[0]), (Host, Port))  #check if already exists
+try: serverSocket.sendto(str(xtrans).encode('utf-8'), (Host, Port))
 except: print('Waiting For Hospital to Join network...')
 
 
