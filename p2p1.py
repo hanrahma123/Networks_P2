@@ -15,7 +15,7 @@ privatekey = RSAkey
 publickey = RSAkey.publickey()
 #save private key to file
 file = open("Keys.txt", "w")
-file.write(privatekey.exportKey().decode()) #save exported private key
+file.write(privatekey.exportKey(passphrase='savelives').decode()) #save exported private key
 file.close()
 
 serverSocket = socket(AF_INET, SOCK_DGRAM)

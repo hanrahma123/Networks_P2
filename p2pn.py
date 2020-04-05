@@ -12,7 +12,7 @@ serverSocket = socket(AF_INET, SOCK_DGRAM)
 file = open("Keys.txt", "r")
 privateKeyString = file.read() 
 file.close()
-RSAkey = RSA.importKey(privateKeyString)
+RSAkey = RSA.importKey(privateKeyString,passphrase='savelives')
 publickey = RSAkey.publickey()
 
 Host = '127.0.0.1'  #host ip {README!! ip->ipv4}
