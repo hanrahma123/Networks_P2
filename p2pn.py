@@ -5,6 +5,7 @@ from threading import Thread
 import asyncio
 import sys
 import time
+import random
 
 serverSocket = socket(AF_INET, SOCK_DGRAM)
 
@@ -17,27 +18,39 @@ hosp_code = ["MAYO", "MAST", "ADVH", "METO", "CEDS"]
 hosp_name = ["Mayo Clinic Hospital", "Massachusetts General Hospital", "AdventHealth Orlando",
 "Methodist Hospital", "Cedars-Sinai Medical Center"]
 
+#Data initliasation
+num_beds = 5000 - random.randint(1,2000)
+num_free_beds = num_beds - random.randint(1,num_beds)
+print("Number of beds ->", num_beds)
+print("Number of unoccupied beds ->", num_free_beds)
+
 
 xtrans =-999  #arbitrary value for bed init value
 next_set =0 #tracks whether or not node is connected 0/1
 next = (Host,Port)   #neighbour node address {important!!}  #issue atm quick-fixed
 
 try: serverSocket.sendto(str(xtrans).encode('utf-8'), (Host, Port))  #check if already exists
-except: print('Waiting For Hospital to Join network...')
+except: print('Waiting For hospital to join network...')
 
 def interpreter(dmsg):
-   global hosp_id, next
+   global hosp_id, next, num_free_beds
    dmsg_arr = dmsg.split()
+
    if dmsg_arr[0] == "ID": #assigning ID to this hospital
       hosp_id = int(dmsg_arr[1])
       print("My ID is", hosp_id)
       print("Abreviation->", hosp_code[hosp_id])
       print("Hospital Name->", hosp_name[hosp_id])
+
    elif dmsg_arr[0] == "beds":
       print("received a beds message")
       if dmsg_arr[1] != str(hosp_id):
          print("passing message")
          pasmsg = dmsg
+         #adjust number of free beds for sense of realism
+         num_free_beds = num_free_beds + random.randint(1,100) - 50
+         #attach this hospital's data
+         pasmsg = pasmsg + " " + str(hosp_id) + " " + str(num_beds) + " " + str(num_free_beds)
          serverSocket.sendto(str(pasmsg).encode('utf-8'), next)
          print("message passed")
       else:
