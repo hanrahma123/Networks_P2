@@ -20,7 +20,7 @@ hosp_name = ["Mayo Clinic Hospital", "Massachusetts General Hospital", "AdventHe
 
 xtrans =-999  #arbitrary value for bed init value
 next_set =0 #tracks whether or not node is connected 0/1
-
+next = (Host,Port)   #neighbour node address {important!!}  #issue atm quick-fixed
 
 try: serverSocket.sendto(str(xtrans).encode('utf-8'), (Host, Port))  #check if already exists
 except: print('Waiting For Hospital to Join network...')
@@ -58,7 +58,7 @@ def receivemsg():
 
    if next_set == 0: #should be 0 set up node/client
       next_set =1
-      next = (Host,Port)   #neighbour node address {important!!}  #issue atm quick-fixed
+  
       print("My next node is:" +str(next) ) #debug
 
    # if (str(msg)[3] == '('):
