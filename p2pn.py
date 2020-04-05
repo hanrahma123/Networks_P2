@@ -3,7 +3,8 @@
 from socket import *
 from threading import Thread
 import asyncio
-import sys 
+import sys
+import time
 
 serverSocket = socket(AF_INET, SOCK_DGRAM)
 
@@ -11,6 +12,10 @@ serverSocket = socket(AF_INET, SOCK_DGRAM)
 Host = '127.0.0.1'  #host ip {README!! ip->ipv4}
 Port = 3000        #my port
 
+hosp_id = 1
+hosp_code = ["MAYO", "MAST", "ADVH", "METO", "CEDS"]
+hosp_name = ["Mayo Clinic Hospital", "Massachusetts General Hospital", "AdventHealth Orlando",
+"Methodist Hospital", "Cedars-Sinai Medical Center"]
 
 
 xtrans =-999  #arbitrary value for bed init value
@@ -20,9 +25,25 @@ next_set =0 #tracks whether or not node is connected 0/1
 try: serverSocket.sendto(str(xtrans).encode('utf-8'), (Host, Port))  #check if already exists
 except: print('Waiting For Hospital to Join network...')
 
+def interpreter(dmsg):
+   global hosp_id, next
+   dmsg_arr = dmsg.split()
+   if dmsg_arr[0] == "ID": #assigning ID to this hospital
+      hosp_id = int(dmsg_arr[1])
+      print("My ID is", hosp_id)
+      print("Abreviation->", hosp_code[hosp_id])
+      print("Hospital Name->", hosp_name[hosp_id])
+   elif dmsg_arr[0] == "beds":
+      print("received a beds message")
+      if dmsg_arr[1] != str(hosp_id):
+         print("passing message")
+         pasmsg = dmsg
+         serverSocket.sendto(str(pasmsg).encode('utf-8'), next)
+         print("message passed")
+
 
 def receivemsg():
-   global next, next_set,msg
+   global next, next_set, msg
 
    if next_set == 0: #should be 0 set up node/client
       next_set =1
@@ -67,7 +88,7 @@ def displayforme():
    print('Number of Beds from:',addr,'==' ,msg.decode('utf-8'))
 
 def inputSend():
-   xtrans = input('Enter Available hospital beds:\n')
+   xtrans = input('Enter command:\n')
    serverSocket.sendto(str(xtrans).encode('utf-8'), next)
    #print("sent to next:"+str(next))
 
@@ -76,6 +97,7 @@ def lookatport():
    msg,addr = serverSocket.recvfrom(2048)  #wait to receive
 
 async def receiveandPrint():
+   global msg
    while True:
       lookatport()
       receivemsg() 
@@ -84,6 +106,7 @@ async def receiveandPrint():
       else: 
          passOn()
          displayforme()
+      interpreter(msg.decode('utf-8'))
       
 
 async def requestandSend():

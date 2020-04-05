@@ -13,13 +13,49 @@ Host = '127.0.0.1' #my ip origin device {find local ip -> ipconfig -> ipv4} READ
 Port = 3000        #myport
 serverSocket.bind((Host,Port))
 
+hosp_id = 0
+hosp_code = "MAYO"
+hosp_name = "Mayo Clinic Hospital"
+other_hosp_id = 0       #sends hospital ids to new hosital on network
 
 xtrans = 1  #arbitrary value 
 next_set =0  #tracks whether or not node is connected 0/1
 
-print('Waiting For Player to Join network...')
+print('Waiting for hospitals to join network...')
  
- 
+def interpreter(dmsg):
+   global other_hosp_id, addr
+   dmsg_arr = dmsg.split()
+   if dmsg == "-999":
+      print("New node on network")
+      other_hosp_id = other_hosp_id + 1
+      id = str(other_hosp_id)
+      reply = "ID " + id
+      serverSocket.sendto(str(reply).encode('utf-8'), addr) 
+      #replies to address where it received the message from the new node
+      
+   elif dmsg_arr[0] == "beds":
+      print("received a beds message")
+      if dmsg_arr[1] != str(hosp_id):
+         print("passing message")
+         pasmsg = dmsg
+         serverSocket.sendto(str(pasmsg).encode('utf-8'), next)
+      else:
+         print("message returned home")
+         
+
+def formater():
+   global xtrans, reqlocation, hosp_id
+   xtrans_arr = xtrans.split()
+   if xtrans_arr[0] == "beds":
+      reqlocation = xtrans_arr[1]
+      test = xtrans.replace(reqlocation, str(hosp_id))
+      print("beds message:", test)
+      xtrans = test
+
+
+
+
 def receivemsg():
    global next_set,next,addr,msg
    if next_set == 0: #should be 0 set up node/client
@@ -27,11 +63,12 @@ def receivemsg():
       next = addr   #neighbour node address {important!!}
       print("My next node is:" +str(next)+ str(msg) ) #debug
    if addr != next:
+      print("entering if statement")
       if (str(msg)[3] == '('):
          print("already formatted")
          return 1 #already formatted
    
-      if int(msg.decode('utf-8')) == -999:  #fresh node after 1st connected node
+      if str(msg.decode('utf-8')) == "-999":  #fresh node after 1st connected node
          serverSocket.sendto((str(addr).encode('utf-8') + msg) , next) #if not for that node send to (next)
          print("passed msg to next node" +str(next)) #debug
          return 1 #dont display msg
@@ -46,23 +83,25 @@ def requestSend():
    
    global xtrans,next
    xtrans = input('Enter Available Hospital Beds:\n') 
+   formater()
    serverSocket.sendto(str(xtrans).encode('utf-8'), next)
       
 def lookatport():
    global msg, addr
+   print("Waiting to receive...")
    msg,addr = serverSocket.recvfrom(2048)  #wait to receive
-
-
-
+   print("A message has been received")
 
 
 async def receiveandPrint():
+   global msg
    while True:
       #print("recPrint")
       lookatport()
       response = receivemsg()
       #if response==0: 
       displayforme()
+      interpreter(msg.decode('utf-8'))
      
    
 
