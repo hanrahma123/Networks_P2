@@ -40,11 +40,12 @@ def interpreter(dmsg):
          print("passing message")
          pasmsg = dmsg
          serverSocket.sendto(str(pasmsg).encode('utf-8'), next)
+         print("message passed")
       else:
          print("message returned home")
          
 
-def formater():
+def formatter():
    global xtrans, reqlocation, hosp_id
    xtrans_arr = xtrans.split()
    if xtrans_arr[0] == "beds":
@@ -63,7 +64,6 @@ def receivemsg():
       next = addr   #neighbour node address {important!!}
       print("My next node is:" +str(next)+ str(msg) ) #debug
    if addr != next:
-      print("entering if statement")
       if (str(msg)[3] == '('):
          print("already formatted")
          return 1 #already formatted
@@ -83,7 +83,7 @@ def requestSend():
    
    global xtrans,next
    xtrans = input('Enter Available Hospital Beds:\n') 
-   formater()
+   formatter()
    serverSocket.sendto(str(xtrans).encode('utf-8'), next)
       
 def lookatport():

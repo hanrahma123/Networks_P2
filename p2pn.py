@@ -40,6 +40,17 @@ def interpreter(dmsg):
          pasmsg = dmsg
          serverSocket.sendto(str(pasmsg).encode('utf-8'), next)
          print("message passed")
+      else:
+         print("message returned home")
+
+def formatter():
+   global xtrans, reqlocation, hosp_id
+   xtrans_arr = xtrans.split()
+   if xtrans_arr[0] == "beds":
+      reqlocation = xtrans_arr[1]
+      test = xtrans.replace(reqlocation, str(hosp_id))
+      print("beds message:", test)
+      xtrans = test
 
 
 def receivemsg():
@@ -88,7 +99,9 @@ def displayforme():
    print('Number of Beds from:',addr,'==' ,msg.decode('utf-8'))
 
 def inputSend():
+   global xtrans
    xtrans = input('Enter command:\n')
+   formatter()
    serverSocket.sendto(str(xtrans).encode('utf-8'), next)
    #print("sent to next:"+str(next))
 
