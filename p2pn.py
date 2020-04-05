@@ -49,7 +49,7 @@ except: print('Waiting For Hospital to Join network...')
 
 def receivemsg():
    global next, next_set,msg
-   msg = decrypt(msg)
+   
    if next_set == 0: #should be 0 set up node/client
       next_set =1
   
@@ -109,6 +109,7 @@ def lookatport():
 async def receiveandPrint():
    while True:
       lookatport()
+      msg = decrypt(msg)
       receivemsg() 
       if scanforchangeNext() ==1:
          displayforme()

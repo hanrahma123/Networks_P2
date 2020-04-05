@@ -53,7 +53,7 @@ def receivemsg():
    if next_set == 0: #should be 0 set up node/client
       next_set =1
       next = addr   #neighbour node address {important!!}
-      msg = decrypt(msg)
+      
       print("My next node is:" +str(next)+ " with decrypted msg: " + str(msg.decode()) ) #debug
    if addr != next:
       print('msg is: ' + str(msg.decode())) #what is this format checking?
@@ -90,6 +90,7 @@ async def receiveandPrint():
    while True:
       #print("recPrint")
       lookatport()
+      msg = decrypt(msg)
       response = receivemsg()
       #if response==0: 
       displayforme()
