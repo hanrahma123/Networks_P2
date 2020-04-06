@@ -37,7 +37,7 @@ def encrypt(msg):
    return enc_data
 
 def decrypt(msg):
-   print('recieved encrypted message is: ' + msg)
+   print('in decrypt')
    # retrieve exported private key from file
    file = open("Keys.txt", "r")
    privateKeyString = file.read() 
@@ -46,8 +46,8 @@ def decrypt(msg):
    print(privateKeyString)
    privatekey = RSA.importKey(privateKeyString,passphrase = "savelives")
    dec_data = privatekey.decrypt(msg)
-   print(dec_data)
-   return dec_data
+   print('dec_data is: ' + dec_data.decode())
+   return str(dec_data).decode('utf-8')
 
 def receivemsg():
    global next_set,next,addr,msg
@@ -78,16 +78,18 @@ def requestSend():
    global xtrans,next
    xtrans = input('Enter Available Hospital Beds:\n')
    encrypted = encrypt(xtrans) 
-   
+   xtrans = encrypted[0]
    #need to extract[0] b/c RSA encode returns a tuple with one element as the encrypted message
-   serverSocket.sendto(encrypted[0], next)
+   print('sending encrypted xtrans ' + xtrans)
+   serverSocket.sendto(xtrans, next)
    #serverSocket.sendto(str(xtrans).encode('utf-8'), next)
       
 def lookatport():
    global msg, addr
    msg,addr = serverSocket.recvfrom(2048)  #wait to receive
    print('msg receieved:',msg)
-   print('\nmsg str:',(decrypt(msg))
+   msg = decrypt(msg)
+   print('msg is ' + msg)
    #msg = decrypt(msg.decode('utf-8'))
  #  print('msg:',msg)
 

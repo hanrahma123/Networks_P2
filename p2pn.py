@@ -43,7 +43,8 @@ def decrypt(msg):
    return dec_data
 
 try: 
-   serverSocket.sendto(encrypt('999')[0], (Host, Port))  #check if already exists
+   print('xtrans is: ' + str(xtrans))
+   serverSocket.sendto(encrypt(str(xtrans))[0], (Host, Port))  #check if already exists
    print("\nsent" )
 #try: serverSocket.sendto(str(xtrans).encode('utf-8'), (Host, Port))
 except: print('Waiting For Hospital to Join network...')
