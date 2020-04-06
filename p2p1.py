@@ -42,10 +42,11 @@ def decrypt(msg):
    file = open("Keys.txt", "r")
    privateKeyString = file.read() 
    file.close()
-   #print('private key is: ')
-   #print(privateKeyString)
-   privatekey = RSA.importKey(privateKeyString)
+   print('private key is: ')
+   print(privateKeyString)
+   privatekey = RSA.importKey(privateKeyString,passphrase = "savelives")
    dec_data = privatekey.decrypt(msg)
+   print(dec_data)
    return dec_data
 
 def receivemsg():
@@ -85,12 +86,16 @@ def requestSend():
 def lookatport():
    global msg, addr
    msg,addr = serverSocket.recvfrom(2048)  #wait to receive
+   print('msg receieved:',msg)
+   print('\nmsg str:',(decrypt(msg))
+   #msg = decrypt(msg.decode('utf-8'))
+ #  print('msg:',msg)
 
 async def receiveandPrint():
    while True:
       #print("recPrint")
       lookatport()
-      msg = decrypt(msg)
+      print("decrypt msg:"+ msg)
       response = receivemsg()
       #if response==0: 
       displayforme()

@@ -27,7 +27,7 @@ next = (Host,Port)   #neighbour node address {important!!}  #issue atm quick-fix
 def encrypt(msg):
    bytes_msg = msg.encode()
    enc_data = publickey.encrypt(bytes_msg, 16) #encrypt message with public key
-   print('encrypted message is: ' + str(enc_data))
+   print('encrypted message is: ' + str(enc_data[0]))
    return enc_data
 
 
@@ -42,7 +42,9 @@ def decrypt(msg):
    print('decrypted data is: ' + dec_data.decode())
    return dec_data
 
-try: serverSocket.sendto(encrypt(str(xtrans))[0], (Host, Port))  #check if already exists
+try: 
+   serverSocket.sendto(encrypt('999')[0], (Host, Port))  #check if already exists
+   print("\nsent" )
 #try: serverSocket.sendto(str(xtrans).encode('utf-8'), (Host, Port))
 except: print('Waiting For Hospital to Join network...')
 
@@ -95,21 +97,26 @@ def displayforme():
 def inputSend():
    xtrans = input('Enter Available hospital beds:\n')
    encrypted = encrypt(xtrans) 
+   xtrans = encrypted[0]
    #NOT WORKING. possibly because it got confused what next is?
 
    #need to extract[0] b/c RSA encode returns a tuple with one element as the encrypted message
    #serverSocket.sendto(encrypted[0], next)
-   serverSocket.sendto(str(xtrans).encode('utf-8'), next)
-   #print("sent to next:"+str(next))
+   print("\nnext="+str(next))
+   print("\nsent to next:"+str(xtrans))
+   
+   serverSocket.sendto(encrypted[0], next)
+   #print("\nsent to next:"+str(xtrans))
 
 def lookatport():
    global msg, addr
    msg,addr = serverSocket.recvfrom(2048)  #wait to receive
-
+   print("msg received:",msg)
 async def receiveandPrint():
    while True:
       lookatport()
-      msg = decrypt(msg)
+      #msg = decrypt(msg)
+      #print("\nmsg: " +msg)
       receivemsg() 
       if scanforchangeNext() ==1:
          displayforme()
