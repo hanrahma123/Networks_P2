@@ -50,6 +50,7 @@ def interpreter(dmsg):
          num_free_beds = num_free_beds + random.randint(1,100) - 50
          #attach this hospital's data
          pasmsg = pasmsg + " " + str(hosp_id) + " " + str(num_beds) + " " + str(num_free_beds)
+         #ENCRYPT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
          serverSocket.sendto(str(pasmsg).encode('utf-8'), next)
          print("message passed")
       else:
@@ -136,6 +137,7 @@ async def receiveandPrint():
    while True:
       #print("recPrint")
       lookatport()
+      #DECRYPT msg!!!!!!!!!!!!!!!!!!!!!!!!!!!
       response = receivemsg()
       #if response==0: 
       displayforme()
