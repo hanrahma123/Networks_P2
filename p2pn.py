@@ -18,11 +18,86 @@ publickey = RSAkey.publickey()
 Host = '127.0.0.1'  #host ip {README!! ip->ipv4}
 Port = 3000        #my port
 
-
-
 xtrans =-999  #arbitrary value for bed init value
 next_set =0 #tracks whether or not node is connected 0/1
 next = (Host,Port)   #neighbour node address {important!!}  #issue atm quick-fixed
+
+#Generate hospital data
+hosp_id = 1
+hosp_code = ["MAYO", "MAST", "ADVH", "METO", "CEDS"]
+hosp_name = ["Mayo Clinic Hospital", "Massachusetts General Hospital", "AdventHealth Orlando",
+"Methodist Hospital", "Cedars-Sinai Medical Center"]
+
+#Data initliasation
+num_beds = 5000 - 100
+num_free_beds = num_beds - 800
+print("Number of beds ->", num_beds)
+print("Number of unoccupied beds ->", num_free_beds)
+
+def interpreter(dmsg):
+   global hosp_id, next, num_free_beds
+   dmsg_arr = dmsg.split()
+
+   if dmsg_arr[0] == "ID": #assigning ID to this hospital
+      hosp_id = int(dmsg_arr[1])
+      print("My ID is", hosp_id)
+      print("Abreviation->", hosp_code[hosp_id])
+      print("Hospital Name->", hosp_name[hosp_id])
+
+   elif dmsg_arr[0] == "beds":
+      print("received a beds message")
+      if dmsg_arr[1] != str(hosp_id):
+         print("passing message")
+         pasmsg = dmsg
+         #adjust number of free beds for sense of realism
+         num_free_beds = num_free_beds
+         #attach this hospital's data
+         pasmsg = pasmsg + " " + str(hosp_id) + " " + str(num_beds) + " " + str(num_free_beds)
+         encrypted = encrypt(pasmsg)
+         serverSocket.sendto(encrypted[0], next)
+         print("message passed")
+      else:
+         print("message returned home")
+         table(dmsg)
+
+
+def table(ctable):
+   #print("entered table function")
+   global reqlocation #the hospital abrevation that was requested by this node
+   ctable_arr = ctable.split()
+   print("HospID\t Abrev\t Total Beds\t Free Beds\t Hospital")
+   print(hosp_id, "\t", hosp_code[hosp_id], "\t", num_beds, "\t\t", num_free_beds, "\t\t", hosp_name[hosp_id])
+
+   arraysize = 0
+   for n in ctable_arr:
+      arraysize = arraysize + 1
+
+   index = 2   #index 2 is id, 3 is number of beds, 4 is number of unoccupied beds
+   while(arraysize > index):
+      cid = ctable_arr[index]
+      ctotbeds = ctable_arr[index + 1]
+      cfree = ctable_arr[index+2]
+      cid = int(cid)
+      if reqlocation == hosp_code[cid]:
+         print("\033[1;32;41m") #text colour changed to green
+         print(cid, "\t", hosp_code[cid], "\t", ctotbeds, "\t\t", cfree, "\t\t", hosp_name[cid])
+         print('\033[0m')  #text reset to normal again
+      else:
+         print(cid, "\t", hosp_code[cid], "\t", ctotbeds, "\t\t", cfree, "\t\t", hosp_name[cid])
+      index = index + 3
+
+def formatter():
+   global xtrans, reqlocation, hosp_id
+   print("formatter() function entered")
+   print("xtrans is",xtrans)
+   xtrans_arr = xtrans.split()
+   print("message has been split")
+   if xtrans_arr[0] == "beds":
+      reqlocation = xtrans_arr[1]
+      test = xtrans.replace(reqlocation, str(hosp_id))
+      print("beds message:", test)
+      xtrans = test
+   print("formatter() function exited")
 
 def encrypt(msg):
    bytes_msg = msg.encode()
@@ -119,7 +194,10 @@ def displayforme():
    print('Number of Beds from:',addr,'==' ,msg)
 
 def inputSend():
+   global xtrans
+   print("start of inputSend() function")
    xtrans = input('Enter Available hospital beds:\n')
+   formatter()
    encrypted = encrypt(xtrans) 
    xtrans = encrypted[0]
    #NOT WORKING. possibly because it got confused what next is?
@@ -144,6 +222,7 @@ async def receiveandPrint():
       msg = decrypt(msg)
       #print("\nmsg: " +msg)
       receivemsg() 
+      interpreter(msg)
       if scanforchangeNext() ==1:
          displayforme()
       else: 
