@@ -71,18 +71,32 @@ def scanforchangeNext():
    global next,msg
    #hopefully msg is for this node...
    print("entered scanforchangeNext()")
-   if(next == (Host,Port) and msg == '('):      #if msg received is about to go to host then point to included ip address!!!
+   
+   charmsg = [] 
+   charmsg[:0] = msg
+   print("The 0 character is", charmsg[0])
+
+   if(next == (Host,Port) and charmsg[0] == '('):      #if msg received is about to go to host then point to included ip address!!!
       print("must intercept")
-      newaddrr = msg.decode('utf-8').split("-999")
+      newaddrr = msg.split("-999")
+      print("message split")
       newerAddr = newaddrr[0].split(",")
+      print("updated the address")
       
       newhost = str(newerAddr[0]).split("'")
       #print("ip fn:"+newhost[1]) #final val for host ip  debug
 
       newport = str(newerAddr[1]).split(")")
       #print("port fn:"+ newport[0]) #final port val   debug
-      
-      serverSocket.sendto(str(xtrans).encode('utf-8'), (str(newhost[1]), int(newport[0])))
+      print("going to encrypt the message")
+      encrypted = encrypt(str(xtrans))
+      print("message encrypted")
+
+      print("new host is", str(newhost[1]), "and new port is", int(newport[0]))
+
+      print("sending the message")
+      serverSocket.sendto(encrypted[0], (str(newhost[1]), int(newport[0])))
+      print("message was sent")
       next = (str(newhost[1]), int(newport[0]))
       print("Just changed next to:" + str(next))
       return 1
@@ -90,8 +104,12 @@ def scanforchangeNext():
 
 def passOn():
    global msg,next_set
-   if(msg == '('):     #if already formatted but not for me
-      serverSocket.sendto(msg, next)
+   charmsg = [] 
+   charmsg[:0] = msg
+   print("The 0 character is", charmsg[0])
+   if(charmsg[0] == '('):     #if already formatted but not for me
+      encrypted = encrypt(msg)
+      serverSocket.sendto(encrypted[0], next)
       print("Passed on msg")
       return 1
    return 0

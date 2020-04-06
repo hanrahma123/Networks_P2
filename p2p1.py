@@ -61,14 +61,23 @@ def receivemsg():
       print("My next node is:" +str(next)+ " with decrypted msg: " + msg ) #debug
    if addr != next:
       print('msg is: ' + msg) #what is this format checking?
+      print("before the if msg[3] statement")
       if (msg[3] == '('):
          print("already formatted")
          return 1 #already formatted
-   
+      print("passed the if msg[3] statement")
       if msg == "-999":  #fresh node after 1st connected node
-         serverSocket.sendto((str(addr).encode('utf-8') + msg) , next) #if not for that node send to (next)
+         print("received a -999 message")
+         adrMsg = str(addr) + " " + msg
+         adrMsg = str(adrMsg)
+         print("combined address message is", adrMsg)
+         encrypted = encrypt(adrMsg)
+         print("passing message")
+         serverSocket.sendto(encrypted[0], next) #if not for that node send to (next)
+         print("message sent")
          print("passed msg to next node" +str(next)) #debug
          return 1 #dont display msg
+   print("leaving receivemsg() function")
    return 0
 
 def displayforme():
