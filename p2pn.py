@@ -32,14 +32,18 @@ def encrypt(msg):
 
 
 def decrypt(msg):
-   print('recieved encrypted message is: ')
-   print(msg)
-   
-   #print('private key is: ')
-   #print(privateKeyString)
-   privatekey = RSAkey
+   print('in decrypt')
+   # retrieve exported private key from file
+   file = open("Keys.txt", "r")
+   privateKeyString = file.read() 
+   file.close()
+   print('private key is: ')
+   print(privateKeyString)
+   privatekey = RSA.importKey(privateKeyString,passphrase = "savelives")
    dec_data = privatekey.decrypt(msg)
-   print('decrypted data is: ' + dec_data.decode())
+   #print("before stringing dec_data")
+   dec_data = str(dec_data.decode())
+   #print('dec_data is: ' + dec_data)
    return dec_data
 
 try: 
@@ -66,7 +70,8 @@ def receivemsg():
 def scanforchangeNext():
    global next,msg
    #hopefully msg is for this node...
-   if(next == (Host,Port) and msg.decode('utf-8')[0] == '('):      #if msg received is about to go to host then point to included ip address!!!
+   print("entered scanforchangeNext()")
+   if(next == (Host,Port) and msg == '('):      #if msg received is about to go to host then point to included ip address!!!
       print("must intercept")
       newaddrr = msg.decode('utf-8').split("-999")
       newerAddr = newaddrr[0].split(",")
@@ -85,7 +90,7 @@ def scanforchangeNext():
 
 def passOn():
    global msg,next_set
-   if(msg.decode('utf-8')[0] == '('):     #if already formatted but not for me
+   if(msg == '('):     #if already formatted but not for me
       serverSocket.sendto(msg, next)
       print("Passed on msg")
       return 1
@@ -93,7 +98,7 @@ def passOn():
 
 def displayforme():
    global addr,msg, xtrans,next
-   print('Number of Beds from:',addr,'==' ,msg.decode('utf-8'))
+   print('Number of Beds from:',addr,'==' ,msg)
 
 def inputSend():
    xtrans = input('Enter Available hospital beds:\n')
@@ -113,10 +118,12 @@ def lookatport():
    global msg, addr
    msg,addr = serverSocket.recvfrom(2048)  #wait to receive
    print("msg received:",msg)
+
 async def receiveandPrint():
+   global msg
    while True:
       lookatport()
-      #msg = decrypt(msg)
+      msg = decrypt(msg)
       #print("\nmsg: " +msg)
       receivemsg() 
       if scanforchangeNext() ==1:
