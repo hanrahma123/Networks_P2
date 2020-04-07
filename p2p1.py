@@ -24,7 +24,7 @@ hosp_id = 0
 hosp_code = ["MAYO", "MAST", "ADVH", "METO", "CEDS"]
 hosp_name = ["Mayo Clinic Hospital", "Massachusetts General Hospital", "AdventHealth Orlando",
 "Methodist Hospital", "Cedars-Sinai Medical Center"]
-other_hosp_id = 0       #sends hospital ids to new hosital on network
+other_hosp_id = 0       #sends hospital ids to new hospital on network
 
 num_beds = 5000
 num_free_beds = num_beds - 1000
@@ -47,6 +47,7 @@ print('Waiting For Hospitals to join network...')
 def interpreter(dmsg):
    global other_hosp_id, addr, next, num_free_beds
    dmsg_arr = dmsg.split()
+   print('dsmg_arr is: ' + str(dmsg_arr))
    if dmsg == "-999":
       print("New node on network")
       other_hosp_id = other_hosp_id + 1
@@ -100,19 +101,15 @@ def table(ctable):
          print(cid, "\t", hosp_code[cid], "\t", ctotbeds, "\t\t", cfree, "\t\t", hosp_name[cid])
       index = index + 3
 
-
-
-
 def formatter():
    global xtrans, reqlocation, hosp_id
    xtrans_arr = xtrans.split()
    if xtrans_arr[0] == "beds":
       reqlocation = xtrans_arr[1]
       test = xtrans.replace(reqlocation, str(hosp_id))
-      print("beds message:", test)
+      #print("beds message from " + str(hosp_id) + ":", test)
       xtrans = test
 
- 
 def encrypt(msg):
    bytes_msg = msg.encode()
    enc_data = publickey.encrypt(bytes_msg, 16) #encrypt message with public key
@@ -164,9 +161,9 @@ def receivemsg():
    return 0
 
 def displayforme():
-   global msg
+   global msg, other_hosp_id
    #hopefully msg is for this node
-   print('Number of Beds from:',addr,'==' ,msg)
+   print('Number of Beds from ',hosp_name[other_hosp_id] ,'==' ,msg)
    #print('Number of Beds from:',addr,'==' ,msg.decode('utf-8'))
 
 def requestSend():

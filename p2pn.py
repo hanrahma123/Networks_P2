@@ -92,6 +92,7 @@ def formatter():
    print("xtrans is",xtrans)
    xtrans_arr = xtrans.split()
    print("message has been split")
+   print(xtrans_arr[1])
    if xtrans_arr[0] == "beds":
       reqlocation = xtrans_arr[1]
       test = xtrans.replace(reqlocation, str(hosp_id))
@@ -190,8 +191,8 @@ def passOn():
    return 0
 
 def displayforme():
-   global addr,msg, xtrans,next
-   print('Number of Beds from:',addr,'==' ,msg)
+   global addr,msg, xtrans,next, hosp_id
+   print('Number of Beds from ' + hosp_name[hosp_id-1] + '==' + msg)
 
 def inputSend():
    global xtrans
