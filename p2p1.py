@@ -48,9 +48,9 @@ def interpreter(dmsg):
    global other_hosp_id, addr, next, num_free_beds
    dmsg_arr = dmsg.split()
    if dmsg == "-999":
-      print("New node on network")
       other_hosp_id = other_hosp_id + 1
       id = str(other_hosp_id)
+      print(hosp_name[id] + ' just joined the network.')
       reply = "ID " + id
       encrypted = encrypt(reply)
       serverSocket.sendto(encrypted[0], addr) 
