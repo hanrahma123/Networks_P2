@@ -50,7 +50,6 @@ def interpreter(dmsg):
    if dmsg == "-999":
       other_hosp_id = other_hosp_id + 1
       id = str(other_hosp_id)
-      print(hosp_name[id] + ' just joined the network.')
       reply = "ID " + id
       encrypted = encrypt(reply)
       serverSocket.sendto(encrypted[0], addr) 
@@ -138,7 +137,15 @@ def receivemsg():
 def displayforme():
    global msg, other_hosp_id
    #hopefully msg is for this node
-   print('Number of Beds from ',hosp_name[other_hosp_id] ,'==' ,msg)
+   if(msg == '-999'): #a node makes first contact
+      print(hosp_name[other_hosp_id] + ' just joined the network.')
+   elif(msg.split()[0] =='beds' and len(msg.split())==2): #other nodes are requesting data to generate table
+      print('other hospitals requested data.')
+   elif(msg.split()[0] =='beds'): #nodes send data to generate table
+      print('finished generating table.')
+   else:
+      print('Message from ',hosp_name[other_hosp_id] ,' is: ' ,msg)
+   print(msg)
    #print('Number of Beds from:',addr,'==' ,msg.decode('utf-8'))
 
 def requestSend():

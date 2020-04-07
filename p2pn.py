@@ -84,7 +84,6 @@ def table(ctable):
 def formatter():
    global xtrans, reqlocation, hosp_id
    xtrans_arr = xtrans.split()
-   print(xtrans_arr[1])
    if xtrans_arr[0] == "beds":
       reqlocation = xtrans_arr[1]
       test = xtrans.replace(reqlocation, str(hosp_id))
@@ -148,7 +147,7 @@ def passOn():
 
 def displayforme():
    global addr,msg, xtrans,next, hosp_id
-   print('Number of Beds from ' + hosp_name[hosp_id-1] + '==' + msg)
+   print('Message from ',hosp_name[hosp_id-1] ,' is: ' ,msg)
 
 def inputSend():
    global xtrans
@@ -156,8 +155,6 @@ def inputSend():
    formatter()
    encrypted = encrypt(xtrans) 
    xtrans = encrypted[0]
-   print("\nnext="+str(next))
-   print("\nsent to next:"+str(xtrans))
    serverSocket.sendto(encrypted[0], next)
 
 def lookatport():
