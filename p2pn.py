@@ -103,23 +103,17 @@ def formatter():
 def encrypt(msg):
    bytes_msg = msg.encode()
    enc_data = publickey.encrypt(bytes_msg, 16) #encrypt message with public key
-   print('encrypted message is: ' + str(enc_data[0]))
    return enc_data
 
 
 def decrypt(msg):
-   print('in decrypt')
    # retrieve exported private key from file
    file = open("Keys.txt", "r")
    privateKeyString = file.read() 
    file.close()
-   print('private key is: ')
-   print(privateKeyString)
    privatekey = RSA.importKey(privateKeyString,passphrase = "savelives")
    dec_data = privatekey.decrypt(msg)
-   #print("before stringing dec_data")
    dec_data = str(dec_data.decode())
-   #print('dec_data is: ' + dec_data)
    return dec_data
 
 try: 
@@ -214,7 +208,6 @@ def inputSend():
 def lookatport():
    global msg, addr
    msg,addr = serverSocket.recvfrom(2048)  #wait to receive
-   print("msg received:",msg)
 
 async def receiveandPrint():
    global msg
