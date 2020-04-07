@@ -28,6 +28,7 @@ other_hosp_id = 0       #sends hospital ids to new hospital on network
 
 num_beds = 5000
 num_free_beds = num_beds - 1000
+print("Hospital Name: " +  hosp_name[hosp_id] + "(" + hosp_code[hosp_id] + ") with id: " + str(hosp_id))
 print("Number of beds ->", num_beds)
 print("Number of unoccupied beds ->", num_free_beds)
 
