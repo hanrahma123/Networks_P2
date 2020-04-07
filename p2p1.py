@@ -24,7 +24,7 @@ hosp_id = 0
 hosp_code = ["MAYO", "MAST", "ADVH", "METO", "CEDS"]
 hosp_name = ["Mayo Clinic Hospital", "Massachusetts General Hospital", "AdventHealth Orlando",
 "Methodist Hospital", "Cedars-Sinai Medical Center"]
-other_hosp_id = 0       #sends hospital ids to new hosital on network
+other_hosp_id = 0       #sends hospital ids to new hospital on network
 
 num_beds = 5000
 num_free_beds = num_beds - 1000
@@ -48,19 +48,15 @@ def interpreter(dmsg):
    global other_hosp_id, addr, next, num_free_beds
    dmsg_arr = dmsg.split()
    if dmsg == "-999":
-      print("New node on network")
       other_hosp_id = other_hosp_id + 1
       id = str(other_hosp_id)
       reply = "ID " + id
-      #ENCRYPT HERE
       encrypted = encrypt(reply)
       serverSocket.sendto(encrypted[0], addr) 
       #replies to address where it received the message from the new node
       
    elif dmsg_arr[0] == "beds":
-      print("received a beds message")
       if dmsg_arr[1] != str(hosp_id):
-         print("passing message")
          pasmsg = dmsg
          #adjust number of free beds for sense of realism
          num_free_beds = num_free_beds
@@ -69,9 +65,7 @@ def interpreter(dmsg):
          #ENCRYPT HERE
          encrypted = encrypt(pasmsg)
          serverSocket.sendto(encrypted[0], next)
-         print("message passed")
       else:
-         print("message returned home")
          #now print the data into a table
          table(dmsg)
          
@@ -100,115 +94,81 @@ def table(ctable):
          print(cid, "\t", hosp_code[cid], "\t", ctotbeds, "\t\t", cfree, "\t\t", hosp_name[cid])
       index = index + 3
 
-
-
-
 def formatter():
    global xtrans, reqlocation, hosp_id
    xtrans_arr = xtrans.split()
    if xtrans_arr[0] == "beds":
       reqlocation = xtrans_arr[1]
       test = xtrans.replace(reqlocation, str(hosp_id))
-      print("beds message:", test)
       xtrans = test
 
- 
 def encrypt(msg):
    bytes_msg = msg.encode()
    enc_data = publickey.encrypt(bytes_msg, 16) #encrypt message with public key
-   print('encrypted message is: ' + str(enc_data[0]))
    return enc_data
 
 def decrypt(msg):
-   print('in decrypt')
    # retrieve exported private key from file
    file = open("Keys.txt", "r")
    privateKeyString = file.read() 
    file.close()
-   print('private key is: ')
-   print(privateKeyString)
    privatekey = RSA.importKey(privateKeyString,passphrase = "savelives")
    dec_data = privatekey.decrypt(msg)
-   #print("before stringing dec_data")
    dec_data = str(dec_data.decode())
-   #print('dec_data is: ' + dec_data)
    return dec_data
 
 def receivemsg():
    global next_set,next,addr,msg
-   print("entering receivemsg() function")
    if next_set == 0: #should be 0 set up node/client
       next_set =1
       next = addr   #neighbour node address {important!!}
       
-      print("My next node is:" +str(next)+ " with decrypted msg: " + msg ) #debug
    if addr != next:
-      print('msg is: ' + msg) #what is this format checking?
-      print("before the if msg[3] statement")
       if (msg[3] == '('):
-         print("already formatted")
          return 1 #already formatted
-      print("passed the if msg[3] statement")
       if msg == "-999":  #fresh node after 1st connected node
-         print("received a -999 message")
          adrMsg = str(addr) + " " + msg
          adrMsg = str(adrMsg)
-         print("combined address message is", adrMsg)
          encrypted = encrypt(adrMsg)
-         print("passing message")
          serverSocket.sendto(encrypted[0], next) #if not for that node send to (next)
-         print("message sent")
-         print("passed msg to next node" +str(next)) #debug
          return 1 #dont display msg
-   print("leaving receivemsg() function")
    return 0
 
 def displayforme():
-   global msg
+   global msg, other_hosp_id
    #hopefully msg is for this node
-   print('Number of Beds from:',addr,'==' ,msg)
-   #print('Number of Beds from:',addr,'==' ,msg.decode('utf-8'))
+   if(msg == '-999'): #a node makes first contact
+      print(hosp_name[other_hosp_id] + ' just joined the network.')
+   elif(msg.split()[0] =='beds'): #other nodes are requesting data to generate table
+      pass
+   else:
+      print('Message from ',hosp_name[other_hosp_id] ,' is: ' ,msg)
 
 def requestSend():
    global xtrans,next
    xtrans = input('Enter Available Hospital Beds:\n')
    formatter()
    encrypted = encrypt(xtrans) 
-   print("exited encryt function")
-   #xtrans = encrypted[0]
    #need to extract[0] b/c RSA encode returns a tuple with one element as the encrypted message
-   print('sending encrypted xtrans ' + str(encrypted[0]))
    serverSocket.sendto(encrypted[0], next)
-   print('message sent!')
-   #serverSocket.sendto(str(xtrans).encode('utf-8'), next)
       
 def lookatport():
    global msg, addr
    msg,addr = serverSocket.recvfrom(2048)  #wait to receive
-   print('msg receieved:',msg)
    msg = decrypt(msg)
-   print("exited decrypt function")
-   print('msg is ' + msg)
-   #msg = decrypt(msg.decode('utf-8'))
- #  print('msg:',msg)
 
 async def receiveandPrint():
    while True:
-      #print("recPrint")
       lookatport()
-      print("decrypt msg:"+ msg)
       response = receivemsg()
       interpreter(msg)
-      #if response==0: 
       displayforme()
      
 async def requestandSend():
    while True:
-     # print("reqSend")
       try:
          requestSend()
       except IOError:
-         #sys.exit()  #Terminate the program 
          print("err")
 
 def start_loop(loop):
