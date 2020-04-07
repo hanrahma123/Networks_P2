@@ -40,9 +40,6 @@ def interpreter(dmsg):
 
    if dmsg_arr[0] == "ID": #assigning ID to this hospital
       hosp_id = int(dmsg_arr[1])
-      print("My ID is", hosp_id)
-      print("Abreviation->", hosp_code[hosp_id])
-      print("Hospital Name->", hosp_name[hosp_id])
 
    elif dmsg_arr[0] == "beds": #recieved a bed message
       if dmsg_arr[1] != str(hosp_id):
@@ -87,7 +84,6 @@ def formatter():
    if xtrans_arr[0] == "beds":
       reqlocation = xtrans_arr[1]
       test = xtrans.replace(reqlocation, str(hosp_id))
-      print("beds message:", test)
       xtrans = test
 
 def encrypt(msg):
@@ -146,12 +142,22 @@ def passOn():
    return 0
 
 def displayforme():
-   global addr,msg, xtrans,next, hosp_id
-   print('Message from ',hosp_name[hosp_id-1] ,' is: ' ,msg)
+   global msg, hosp_id
+   #hopefully msg is for this node
+   if (msg.split()[0] =='ID'): #initializes node
+      print("Hospital Name: " +  hosp_name[hosp_id] + "(" + hosp_code[hosp_id] + ") with id: " + str(hosp_id))
+   elif (msg == '-999'): #welcome message
+      print('welcome! You just joined the network.')
+   elif(msg[0]=='('): #passing initialization message through the network
+      print('another hospital just joined the network.')
+   elif(msg.split()[0] =='beds'): #another node is requested or generating data
+      pass
+   else:
+      print('Message from ',hosp_name[hosp_id-1] ,' is: ' ,msg)
 
 def inputSend():
    global xtrans
-   xtrans = input('Enter Available hospital beds:\n')
+   xtrans = input('Enter Command:\n')
    formatter()
    encrypted = encrypt(xtrans) 
    xtrans = encrypted[0]

@@ -139,18 +139,14 @@ def displayforme():
    #hopefully msg is for this node
    if(msg == '-999'): #a node makes first contact
       print(hosp_name[other_hosp_id] + ' just joined the network.')
-   elif(msg.split()[0] =='beds' and len(msg.split())==2): #other nodes are requesting data to generate table
-      print('other hospitals requested data.')
-   elif(msg.split()[0] =='beds'): #nodes send data to generate table
-      print('finished generating table.')
+   elif(msg.split()[0] =='beds'): #other nodes are requesting data to generate table
+      pass
    else:
       print('Message from ',hosp_name[other_hosp_id] ,' is: ' ,msg)
-   print(msg)
-   #print('Number of Beds from:',addr,'==' ,msg.decode('utf-8'))
 
 def requestSend():
    global xtrans,next
-   xtrans = input('Enter Available Hospital Beds:\n')
+   xtrans = input('Enter Command:\n')
    formatter()
    encrypted = encrypt(xtrans) 
    #need to extract[0] b/c RSA encode returns a tuple with one element as the encrypted message
