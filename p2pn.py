@@ -6,6 +6,7 @@ import asyncio
 import sys 
 from Crypto.PublicKey import RSA
 from Crypto import Random
+from Crypto.Random import random as rand
 
 serverSocket = socket(AF_INET, SOCK_DGRAM)
 #generate an new public key from the fetch the file to get private key, create new public key from it, then you can encrypt whatever you want
@@ -29,10 +30,10 @@ hosp_name = ["Mayo Clinic Hospital", "Massachusetts General Hospital", "AdventHe
 "Methodist Hospital", "Cedars-Sinai Medical Center"]
 
 #Data initliasation
-num_beds = 5000 - 100
+num_beds = rand.randint(1000,5000)
 num_free_beds = num_beds - 800
-print("Number of beds ->", num_beds)
-print("Number of unoccupied beds ->", num_free_beds)
+print("Number of total beds -> ", num_beds)
+print("Number of unoccupied beds -> ", num_free_beds)
 
 def interpreter(dmsg):
    global hosp_id, next, num_free_beds

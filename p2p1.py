@@ -5,9 +5,9 @@ from threading import Thread
 from socket import *
 import sys 
 from Crypto import Random
+from Crypto.Random import random as rand
 import Crypto.Cipher.AES as AES
 from Crypto.PublicKey import RSA
-
 
 #generate keys
 random = Random.new().read
@@ -26,10 +26,10 @@ hosp_name = ["Mayo Clinic Hospital", "Massachusetts General Hospital", "AdventHe
 "Methodist Hospital", "Cedars-Sinai Medical Center"]
 other_hosp_id = 0       #sends hospital ids to new hospital on network
 
-num_beds = 5000
+num_beds = rand.randint(1000,5000)
 num_free_beds = num_beds - 1000
 print("Hospital Name: " +  hosp_name[hosp_id] + "(" + hosp_code[hosp_id] + ") with id: " + str(hosp_id))
-print("Number of beds ->", num_beds)
+print("Number of total beds ->", num_beds)
 print("Number of unoccupied beds ->", num_free_beds)
 
 
