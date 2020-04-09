@@ -1,5 +1,5 @@
 ## How to Run
-1. Make sure you have Python3 installed and the Pycropyto library.
+1. Make sure you have Python3 installed and the Pycrypto library.
 2. open a terminal window and navigate to the folder containing p2p1.py and p2pn.py. Run p2p1.py in python3
 ```shell
 python3 p2p1.py
@@ -44,7 +44,7 @@ beds ?
 
 3. request information from a specific hospital by entering command "beds" followed by the hospital abbreviation ("MAYO", "MAST", "ADVH", "METO", "CEDS"). This will display the distributed database table with the selected hospital highlighted. The selected hospital must already be active in the network.
 
-From MAYO terminal:
+MAYO Terminal
 ```shell
 Enter Command:
 beds MAST
