@@ -12,11 +12,11 @@ from Crypto.PublicKey import RSA
 #generate keys
 random = Random.new().read
 RSAkey = RSA.generate(1024, random) 
-privatekey = RSAkey
-publickey = RSAkey.publickey()
-#save private key to file
+private = RSAkey #private key used for decryption
+public = RSAkey.publickey() #public key used for encryption
+#save private key to password protected file shared among hospitals in network
 file = open("Keys.txt", "w")
-file.write(privatekey.exportKey(passphrase='savelives').decode()) #save exported private key
+file.write(private.exportKey(passphrase='savelives').decode()) #save exported private key
 file.close()
 
 #generate hospital data
@@ -105,18 +105,14 @@ def formatter():
 
 def encrypt(msg):
    bytes_msg = msg.encode()
-   enc_data = publickey.encrypt(bytes_msg, 16) #encrypt message with public key
-   return enc_data
+   encrypted = public.encrypt(bytes_msg, 16) #encrypt message with public key
+   return encrypted
 
 def decrypt(msg):
-   # retrieve exported private key from file
-   file = open("Keys.txt", "r")
-   privateKeyString = file.read() 
-   file.close()
-   privatekey = RSA.importKey(privateKeyString,passphrase = "savelives")
-   dec_data = privatekey.decrypt(msg)
-   dec_data = str(dec_data.decode())
-   return dec_data
+   global private
+   decrypted = private.decrypt(msg)
+   decrypted = str(decrypted.decode())
+   return decrypted
 
 def receivemsg():
    global next_set,next,addr,msg

@@ -11,10 +11,10 @@ from Crypto.Random import random as rand
 serverSocket = socket(AF_INET, SOCK_DGRAM)
 #generate an new public key from the fetch the file to get private key, create new public key from it, then you can encrypt whatever you want
 file = open("Keys.txt", "r")
-privateKeyString = file.read() 
+privateStr = file.read() 
 file.close()
-RSAkey = RSA.importKey(privateKeyString,passphrase='savelives')
-publickey = RSAkey.publickey()
+RSAkey = RSA.importKey(privateStr,passphrase='savelives')
+public = RSAkey.publickey()
 
 Host = '127.0.0.1'  #host ip {README!! ip->ipv4}
 Port = 3000        #my port
@@ -89,19 +89,16 @@ def formatter():
 
 def encrypt(msg):
    bytes_msg = msg.encode()
-   enc_data = publickey.encrypt(bytes_msg, 16) #encrypt message with public key
-   return enc_data
+   encrypted = public.encrypt(bytes_msg, 16) #encrypt message with public key
+   return encrypted
 
 
 def decrypt(msg):
    # retrieve exported private key from file
-   file = open("Keys.txt", "r")
-   privateKeyString = file.read() 
-   file.close()
-   privatekey = RSA.importKey(privateKeyString,passphrase = "savelives")
-   dec_data = privatekey.decrypt(msg)
-   dec_data = str(dec_data.decode())
-   return dec_data
+   global RSAkey
+   decrypted = RSAkey.decrypt(msg)
+   decrypted = str(decrypted.decode())
+   return decrypted
 
 try: 
    serverSocket.sendto(encrypt(str(xtrans))[0], (Host, Port))  #check if already exists
