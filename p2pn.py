@@ -191,8 +191,6 @@ def start_loop(loop):
    loop.run_forever()
 
 
-   ##Essentially the main()
- ##if you want to update a global within a function declare as global at start of function 
    
 loop1 = asyncio.new_event_loop()
 t1 = Thread(target=start_loop, args=(loop1,))

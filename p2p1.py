@@ -172,11 +172,6 @@ def start_loop(loop):
    asyncio.set_event_loop(loop)
    loop.run_forever()
 
- #infinite loop
-   #task1 = asyncio.create_task(receiveandPrint())
-   #task2 = asyncio.create_task(requestandSend())
-  # asyncio.run(receiveandPrint())
-  # asyncio.run(requestandSend())
 loop1 = asyncio.new_event_loop()
 t1 = Thread(target=start_loop, args=(loop1,))
 loop2 = asyncio.new_event_loop()
@@ -187,11 +182,7 @@ t2.start()
 
 asyncio.run_coroutine_threadsafe(receiveandPrint(),loop1)
 asyncio.run_coroutine_threadsafe(requestandSend(),loop2)
-   #loop = asyncio.get_event_loop()
-   # tasks =[asyncio.ensure_future(receiveandPrint()),
-   # asyncio.ensure_future(requestandSend())]
-   # loop.run_until_complete(asyncio.gather(*tasks))
-   #await task1, task2
+
    
   
 
